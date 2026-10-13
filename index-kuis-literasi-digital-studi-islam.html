@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis Literasi Digital dalam Studi Islam — Kelas M</title>
+<style>
+:root{--emerald:#087f5b;--emerald2:#0b6b50;--navy:#14243a;--white:#fff;--ink:#1f2937;--muted:#64748b;--pale:#f1f8f5;--line:#d8e5df;--red:#b42318;--green:#16794b}
+*{box-sizing:border-box}body{margin:0;background:#f3f7f6;color:var(--ink);font-family:Arial,Helvetica,sans-serif;line-height:1.55}
+header{background:var(--emerald);color:white;padding:28px 18px 24px;text-align:center;border-bottom:6px solid var(--navy)}
+header .eyebrow{font-size:.83rem;letter-spacing:1.6px;font-weight:700;text-transform:uppercase}
+header h1{margin:8px auto 5px;max-width:800px;font-size:clamp(1.45rem,4vw,2.15rem);line-height:1.2}
+header p{margin:8px 0 0;color:#effff8}
+main{max-width:850px;margin:22px auto;padding:0 14px 35px}
+.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 6px 20px #14243a0b;margin-bottom:16px}
+.topline{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--navy);font-weight:700}
+.track{height:9px;background:#e4eee9;border-radius:20px;overflow:hidden;margin:13px 0 5px}.bar{height:100%;background:var(--emerald);width:0%;transition:width .2s}
+.qnum{font-size:.9rem;color:var(--emerald);font-weight:800;letter-spacing:.4px}
+h2{font-size:1.23rem;line-height:1.4;color:var(--navy);margin:9px 0 17px}
+.answers{display:grid;gap:10px}
+.answer{display:flex;gap:11px;align-items:flex-start;text-align:left;width:100%;padding:13px 14px;border:1.5px solid #d7e2de;border-radius:11px;background:white;color:var(--ink);font-size:1rem;cursor:pointer;line-height:1.4}
+.answer:hover:not(:disabled){border-color:var(--emerald);background:var(--pale)}
+.letter{display:inline-grid;place-items:center;flex:0 0 28px;height:28px;border-radius:50%;background:#edf3f0;color:var(--navy);font-weight:800}
+.answer.correct{border-color:var(--green);background:#eaf8ef}.answer.correct .letter{background:var(--green);color:white}
+.answer.wrong{border-color:var(--red);background:#fff0ef}.answer.wrong .letter{background:var(--red);color:white}
+.answer:disabled{cursor:default;opacity:1}
+.feedback{display:none;border-radius:10px;padding:14px;margin-top:15px}.feedback.show{display:block}.feedback.good{background:#eaf8ef;border-left:4px solid var(--green)}.feedback.bad{background:#fff0ef;border-left:4px solid var(--red)}
+.controls{display:flex;justify-content:space-between;gap:10px;margin-top:18px;flex-wrap:wrap}
+button.primary,button.secondary{border:0;border-radius:10px;padding:12px 18px;font-size:1rem;font-weight:700;cursor:pointer}
+button.primary{background:var(--emerald);color:white}button.primary:hover{background:var(--emerald2)}
+button.secondary{background:#e9eff3;color:var(--navy)}button:disabled{opacity:.45;cursor:not-allowed}
+.small{font-size:.9rem;color:var(--muted)}
+.result{text-align:center}.score{font-size:3.3rem;color:var(--emerald);font-weight:800;line-height:1.15;margin:12px}
+.review-item{text-align:left;border-top:1px solid var(--line);padding:14px 0}.review-item strong{color:var(--navy)}.review-item .right{color:var(--green)}.review-item .yourwrong{color:var(--red)}
+footer{text-align:center;color:#64748b;font-size:.82rem;padding:18px}
+@media(max-width:500px){.panel{padding:16px}header{padding:23px 14px}.controls button{flex:1}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Kelas M • Kuis Perkuliahan</div>
+  <h1>Literasi Digital dalam Studi Islam</h1>
+  <p>20 Soal Pilihan Ganda • Umpan Balik Langsung • Nilai Akhir</p>
+</header>
+<main>
+  <section class="panel" id="quizPanel">
+    <div class="topline"><span id="progressText">Soal 1 dari 20</span><span id="scoreText">Benar: 0</span></div>
+    <div class="track"><div class="bar" id="progressBar"></div></div>
+    <div class="qnum" id="qnum">PERTANYAAN 01</div>
+    <h2 id="question"></h2>
+    <div class="answers" id="answers"></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <div class="controls">
+      <button class="secondary" id="restartBtn" type="button">Acak Ulang</button>
+      <button class="primary" id="nextBtn" type="button" disabled>Soal Berikutnya →</button>
+    </div>
+    <p class="small">Pilih satu jawaban. Setelah memilih, kunci dan penjelasan akan langsung ditampilkan.</p>
+  </section>
+  <section class="panel result" id="resultPanel" hidden>
+    <div class="qnum">HASIL KUIS</div><h2>Kuis selesai!</h2>
+    <div class="score" id="finalScore">0</div>
+    <p id="resultMessage"></p>
+    <button class="primary" id="reviewBtn" type="button">Lihat Pembahasan</button>
+    <button class="secondary" id="againBtn" type="button">Ulangi dengan Soal Acak</button>
+    <div id="review" hidden></div>
+  </section>
+</main>
+<footer>Literasi Digital dalam Studi Islam • Kelas M</footer>
+<script>
+const originalQuestions = [
+{q:"Apa yang paling tepat dimaksud dengan literasi digital dalam studi Islam?",a:["Kemampuan menggunakan perangkat digital hanya untuk hiburan","Kemampuan mengakses, menilai, memahami, dan menggunakan informasi digital secara kritis dan bertanggung jawab","Kemampuan menyebarkan semua informasi agama yang populer","Kemampuan mengganti seluruh sumber keilmuan dengan media sosial"],c:1,e:"Literasi digital mencakup akses, evaluasi kritis, pemahaman, dan penggunaan informasi secara bertanggung jawab; bukan sekadar kemampuan teknis."},
+{q:"Ketika menemukan kutipan hadis viral tanpa sumber yang jelas, tindakan paling tepat adalah ...",a:["Langsung membagikannya karena isinya terdengar baik","Menganggapnya sahih jika banyak disukai","Memeriksa sumber hadis dan penjelasan ulama atau rujukan tepercaya sebelum menyebarkannya","Mengubah redaksinya agar lebih menarik"],c:2,e:"Informasi keagamaan perlu ditelusuri sumber dan konteksnya. Popularitas atau niat baik tidak otomatis menjamin ketepatan atribusi."},
+{q:"Mengapa pencantuman sumber digital penting dalam tulisan akademik tentang Islam?",a:["Agar tulisan terlihat lebih panjang","Untuk memungkinkan pembaca menelusuri bukti, memeriksa klaim, dan menghargai karya orang lain","Supaya penulis tidak perlu menjelaskan argumennya","Agar semua sumber internet dianggap setara"],c:1,e:"Sitasi mendukung keterlacakan bukti, transparansi akademik, dan pencegahan plagiarisme."},
+{q:"Sebuah unggahan menyatakan fatwa tertentu berlaku di semua negara, tetapi tidak menyebut lembaga atau konteksnya. Sikap kritis yang tepat adalah ...",a:["Menerimanya karena menggunakan istilah agama","Memeriksa lembaga penerbit, tanggal, konteks, dan cakupan fatwa","Menyebarkannya sambil menulis 'katanya'","Menilai kebenarannya dari jumlah pengikut akun"],c:1,e:"Fatwa memiliki sumber, konteks, dan cakupan. Identitas penerbit serta konteks perlu diperiksa sebelum menarik kesimpulan."},
+{q:"Manakah contoh etika digital yang selaras dengan nilai Islam?",a:["Menyebarkan aib orang demi peringatan publik","Membalas perbedaan pendapat dengan penghinaan","Menjaga kehormatan orang lain, memeriksa informasi, dan berkomunikasi santun","Mengunggah foto pribadi orang lain tanpa izin"],c:2,e:"Etika digital perlu mencerminkan kejujuran, kesantunan, tanggung jawab, dan penghormatan terhadap kehormatan serta privasi."},
+{q:"Prinsip tabayyun dalam lingkungan digital paling dekat dengan tindakan ...",a:["Memeriksa kebenaran berita sebelum mempercayai atau menyebarkannya","Memilih informasi yang sesuai pendapat sendiri","Membagikan berita secepat mungkin","Menghindari semua informasi yang berbeda"],c:0,e:"Tabayyun berarti melakukan klarifikasi atau pemeriksaan atas informasi, khususnya sebelum mengambil sikap atau menyebarkannya."},
+{q:"Apa risiko utama menggunakan potongan ceramah tanpa melihat konteks lengkapnya?",a:["Video pasti menjadi lebih lambat","Makna pernyataan dapat berubah atau disalahpahami","Semua potongan video melanggar hukum","Sumber otomatis menjadi lebih tepercaya"],c:1,e:"Potongan dapat menghilangkan konteks, syarat, atau penjelasan sehingga pesan pembicara ditafsirkan secara keliru."},
+{q:"Dalam menilai kredibilitas situs keislaman, kombinasi indikator yang paling kuat adalah ...",a:["Desain menarik dan banyak iklan","Judul provokatif dan jumlah komentar tinggi","Penulis atau lembaga jelas, rujukan dapat ditelusuri, tanggal relevan, dan klaim disajikan dengan konteks","Banyak dibagikan di grup percakapan"],c:2,e:"Kredibilitas lebih baik dinilai dari kejelasan penanggung jawab, kualitas rujukan, konteks, dan keterbaruan yang relevan daripada popularitas."},
+{q:"Jika dua sumber digital menyampaikan penjelasan keagamaan yang berbeda, langkah akademik yang tepat adalah ...",a:["Memilih sumber yang paling viral","Membandingkan otoritas, metode, dalil, konteks, dan argumentasi masing-masing","Menganggap keduanya pasti salah","Mengambil kalimat yang paling mudah diterima tanpa pemeriksaan"],c:1,e:"Perbandingan kritis mempertimbangkan otoritas sumber dan kualitas argumentasi, serta mengakui kemungkinan perbedaan konteks atau metode."},
+{q:"Manakah perilaku yang termasuk plagiarisme digital?",a:["Mengutip paragraf dari situs dengan tanda kutip dan sitasi","Merangkum gagasan orang lain dengan menyebut sumber","Menyalin tulisan orang lain ke tugas sendiri tanpa atribusi","Membandingkan dua artikel lalu memberi analisis sendiri"],c:2,e:"Mengambil karya atau gagasan orang lain tanpa pengakuan yang layak merupakan plagiarisme, termasuk ketika dilakukan dengan menyalin dari internet."},
+{q:"Apa fungsi utama mesin pencari akademik dan repositori ilmiah dalam studi Islam?",a:["Menjamin semua dokumen yang ditemukan pasti benar","Membantu menemukan literatur yang dapat ditelusuri untuk ditelaah secara kritis","Menggantikan proses membaca dan menilai sumber","Membuat sitasi tidak lagi diperlukan"],c:1,e:"Mesin pencari akademik dan repositori memudahkan penelusuran literatur, tetapi kualitas dan relevansi setiap sumber tetap perlu dievaluasi."},
+{q:"Ketika menggunakan kecerdasan buatan untuk membantu merangkum materi keislaman, pengguna sebaiknya ...",a:["Menerima semua jawaban tanpa pemeriksaan","Menganggap kutipan dan referensi yang dihasilkan selalu nyata","Memverifikasi klaim dan referensi ke sumber asli serta menyatakan penggunaan alat sesuai aturan akademik","Menyerahkan seluruh analisis dan tanggung jawab kepada alat"],c:2,e:"AI dapat menghasilkan kekeliruan atau referensi yang tidak nyata. Verifikasi sumber asli dan transparansi penggunaan tetap diperlukan."},
+{q:"Mengapa tanggal publikasi perlu diperhatikan saat mencari informasi hukum atau kebijakan pendidikan Islam?",a:["Semua informasi lama pasti salah","Peraturan atau kebijakan dapat berubah sehingga status keberlakuan dan tanggalnya perlu diperiksa","Tanggal hanya penting untuk berita olahraga","Tanggal terbaru menjamin isi selalu benar"],c:1,e:"Tanggal membantu menilai apakah informasi masih relevan, tetapi sumber dan status resmi tetap perlu diperiksa."},
+{q:"Apa tindakan yang paling tepat ketika menemukan gambar atau kutipan yang diduga dimanipulasi?",a:["Menyebarkannya agar orang lain menilai","Memeriksa sumber awal, konteks, dan bukti pembanding sebelum membuat kesimpulan","Menghapus nama pembuat lalu mengunggah ulang","Menganggapnya benar jika sesuai keyakinan pribadi"],c:1,e:"Pemeriksaan sumber awal, konteks, dan bukti pembanding membantu mengurangi risiko tertipu konten manipulatif."},
+{q:"Dalam diskusi keislaman di media sosial, bagaimana menghadapi perbedaan pendapat secara bertanggung jawab?",a:["Menyerang pribadi lawan bicara","Mengutip pernyataan di luar konteks untuk mempermalukan pihak lain","Menyampaikan argumen dengan santun, merujuk sumber, dan membedakan kritik gagasan dari serangan pribadi","Mengajak pengikut melaporkan semua pendapat berbeda"],c:2,e:"Diskusi sehat berfokus pada gagasan dan bukti, menggunakan bahasa santun, serta menghindari serangan pribadi dan manipulasi konteks."},
+{q:"Manakah praktik yang paling baik untuk menjaga privasi saat mengikuti kelas atau forum studi Islam daring?",a:["Membagikan tautan rapat dan data peserta secara terbuka","Mengunggah tangkapan layar percakapan pribadi tanpa izin","Menggunakan pengaturan keamanan, membatasi data pribadi, dan meminta izin sebelum membagikan konten orang lain","Memakai kata sandi yang sama untuk semua akun"],c:2,e:"Perlindungan privasi mencakup pembatasan data, pengamanan akun, dan persetujuan sebelum membagikan konten yang melibatkan orang lain."},
+{q:"Apa yang dimaksud jejak digital dalam kegiatan belajar dan berdakwah daring?",a:["Catatan aktivitas dan konten digital yang dapat tersimpan atau ditelusuri kembali","Hanya file yang tersimpan di komputer pribadi","Informasi yang otomatis hilang setelah diunggah","Daftar situs yang tidak pernah dibuka"],c:0,e:"Jejak digital adalah rekaman aktivitas atau konten digital yang dapat bertahan dan berpotensi ditemukan kembali."},
+{q:"Seorang mahasiswa memakai artikel daring sebagai satu-satunya dasar untuk menyimpulkan pandangan seluruh ulama. Apa kelemahan utamanya?",a:["Artikel daring tidak boleh digunakan dalam studi Islam","Kesimpulan terlalu luas dibandingkan bukti yang diperiksa dan belum mewakili keragaman sumber","Semua ulama pasti memiliki pandangan yang sama","Kesimpulan akademik tidak memerlukan sumber"],c:1,e:"Kesimpulan harus sebanding dengan cakupan bukti. Satu artikel belum tentu mewakili keragaman pandangan, mazhab, atau konteks."},
+{q:"Bagaimana teknologi digital dapat dimanfaatkan secara produktif dalam pembelajaran Al-Qur'an dan hadis?",a:["Mengganti semua guru dan proses verifikasi","Menggunakan aplikasi atau perpustakaan digital sebagai sarana belajar sambil memeriksa edisi, sumber, dan penjelasannya","Mengandalkan hasil pencarian pertama tanpa membaca","Mengutamakan aplikasi yang paling populer tanpa mengevaluasi isinya"],c:1,e:"Teknologi dapat memperluas akses belajar, tetapi ketepatan teks, sumber, edisi, dan penjelasan tetap perlu diperhatikan."},
+{q:"Apa indikator bahwa seseorang menerapkan literasi digital secara matang dalam studi Islam?",a:["Mampu menggunakan banyak aplikasi meskipun tidak menilai isinya","Selalu setuju dengan tokoh yang diikuti","Mampu menelusuri sumber, mengevaluasi bukti, memahami konteks, menjaga etika, dan bertanggung jawab atas penyebaran informasi","Membagikan informasi agama sebanyak mungkin"],c:2,e:"Literasi digital matang menggabungkan kecakapan teknis dengan evaluasi kritis, pemahaman konteks, etika, dan tanggung jawab."},
+{q:"Saat menyebarkan informasi keagamaan yang benar, tanggung jawab digital tetap diperlukan karena ...",a:["Informasi benar boleh disebarkan dengan cara apa pun","Kebenaran isi tidak menghapus kewajiban memperhatikan konteks, privasi, hak cipta, dan dampak penyebaran","Semua informasi agama bersifat rahasia","Sumber tidak perlu disebut jika niatnya baik"],c:1,e:"Informasi yang benar tetap perlu disampaikan secara kontekstual dan etis, dengan memperhatikan privasi, atribusi, dan kemungkinan dampaknya."}
+];
+let questions=[], index=0, score=0, selected=[], userAnswers=[];
+const $=id=>document.getElementById(id);
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function start(){questions=shuffle(originalQuestions.map(q=>({...q,opts:shuffle(q.a.map((text,i)=>({text,correct:i===q.c})))})));index=0;score=0;selected=[];userAnswers=[];$("quizPanel").hidden=false;$("resultPanel").hidden=true;render()}
+function render(){const q=questions[index];$("progressText").textContent=`Soal ${index+1} dari ${questions.length}`;$("scoreText").textContent=`Benar: ${score}`;$("progressBar").style.width=`${index/questions.length*100}%`;$("qnum").textContent=`PERTANYAAN ${String(index+1).padStart(2,"0")}`;$("question").textContent=q.q;$("answers").innerHTML="";$("feedback").className="feedback";$("feedback").textContent="";$("nextBtn").disabled=true;$("nextBtn").textContent=index===questions.length-1?"Lihat Nilai Akhir →":"Soal Berikutnya →";q.opts.forEach((o,i)=>{let b=document.createElement("button");b.type="button";b.className="answer";b.innerHTML=`<span class="letter">${String.fromCharCode(65+i)}</span><span>${o.text}</span>`;b.addEventListener("click",()=>choose(i));$("answers").appendChild(b)})}
+function choose(i){if(selected[index]!==undefined)return;selected[index]=i;const q=questions[index],opts=[...$("answers").children],correct=q.opts.findIndex(o=>o.correct),isCorrect=i===correct;if(isCorrect)score++;userAnswers[index]={chosen:i,correct};opts.forEach((b,j)=>{b.disabled=true;if(j===correct)b.classList.add("correct");if(j===i&&!isCorrect)b.classList.add("wrong")});const f=$("feedback");f.className="feedback show "+(isCorrect?"good":"bad");f.innerHTML=`<strong>${isCorrect?"Benar!":"Belum tepat."}</strong> ${isCorrect?"":"Jawaban yang benar: "+q.opts[correct].text+". "}${q.e}`;$("scoreText").textContent=`Benar: ${score}`;$("progressBar").style.width=`${(index+1)/questions.length*100}%`;$("nextBtn").disabled=false}
+function finish(){$("quizPanel").hidden=true;$("resultPanel").hidden=false;let pct=Math.round(score/questions.length*100);$("finalScore").textContent=`${pct}/100`;$("resultMessage").textContent=`Jawaban benar: ${score} dari ${questions.length}. ${pct>=85?"Sangat baik!":pct>=70?"Baik, terus tingkatkan pemahaman.":pct>=55?"Cukup; pelajari kembali pembahasannya.":"Mari pelajari kembali konsep dan pembahasannya."}`;$("review").hidden=true;$("review").innerHTML="";}
+$("nextBtn").addEventListener("click",()=>{if(selected[index]===undefined)return;if(index<questions.length-1){index++;render()}else finish()});
+$("restartBtn").addEventListener("click",start);$("againBtn").addEventListener("click",start);
+$("reviewBtn").addEventListener("click",()=>{const r=$("review");if(!r.hidden){r.hidden=true;$("reviewBtn").textContent="Lihat Pembahasan";return}r.hidden=false;$("reviewBtn").textContent="Tutup Pembahasan";r.innerHTML=questions.map((q,i)=>{let correct=q.opts.findIndex(o=>o.correct),ua=userAnswers[i];return `<div class="review-item"><strong>${i+1}. ${q.q}</strong><p class="${ua&&ua.chosen===correct?"right":"yourwrong"}">Jawaban Anda: ${ua?q.opts[ua.chosen].text:"Belum dijawab"}</p><p class="right">Kunci: ${q.opts[correct].text}</p><p>${q.e}</p></div>`}).join("")});
+start();
+</script>
+</body>
+</html>
